@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>FINAL HELL – Discord Changelog Panel</title>
+
+<style>
+body {
+    background-color: #2b2d31;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    color: #5865F2;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.panel {
+    background-color: #1e1f22;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+select, textarea {
+    width: 100%;
+    background-color: #313338;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+textarea {
+    height: 200px;
+    resize: vertical;
+}
+
+button {
+    margin-top: 20px;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 12px;
+    background-color: #5865F2;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Discord Changelog Panel</h1>
+
+<div class="panel">
+    <label>Änderungs-Kategorie</label>
+    <select id="category">
+        <option value="channels">Channel-Änderungen</option>
+        <option value="roles">Rollen-Änderungen</option>
+        <option value="permissions">Berechtigungen</option>
+        <option value="bots">Bots / Integrationen</option>
+        <option value="structure">Server-Struktur</option>
+        <option value="rules">Regeln / Informationen</option>
+    </select>
+</div>
+
+<div class="panel">
+    <label>Beschreibung der Discord-Änderung</label>
+    <textarea id="message" placeholder="Beschreibe, was am Discord geändert wurde..."></textarea>
+</div>
+
+<button onclick="send()">Discord Changelog absenden</button>
+
+<script>
+const CONFIG = {
+    WEBHOOK: "https://discord.com/api/webhooks/1464404002723856579/-cuUZLk-w7JW4zfgVqlxe8UQQVljwBFD00Aj_DmwpNPu8sy1-N8CQt2WRkKagPreXOry",
+    FIXED_ROLE: "<@&1462889108962808036>",
+    FOOTER: "FINAL HELL • Discord Changelog"
+};
+
+const CATEGORY_PRESETS = {
+    channels: {
+        title: "Channel-Änderungen",
+        color: 3447003
+    },
+    roles: {
+        title: "Rollen-Änderungen",
+        color: 10181046
+    },
+    permissions: {
+        title: "Berechtigungs-Update",
+        color: 15105570
+    },
+    bots: {
+        title: "Bots / Integrationen",
+        color: 15844367
+    },
+    structure: {
+        title: "Server-Struktur",
+        color: 9807270
+    },
+    rules: {
+        title: "Regeln / Informationen",
+        color: 8359053
+    }
+};
+
+function send() {
+    const categoryKey = document.getElementById("category").value;
+    const messageText = document.getElementById("message").value.trim();
+
+    if (!messageText) {
+        alert("Bitte einen Text eingeben.");
+        return;
+    }
+
+    const now = new Date();
+    const date = now.toLocaleDateString("de-DE");
+    const time = now.toLocaleTimeString("de-DE");
+
+    const payload = {
+        content: CONFIG.FIXED_ROLE,
+        embeds: [{
+            title: CATEGORY_PRESETS[categoryKey].title,
+            description: messageText,
+            color: CATEGORY_PRESETS[categoryKey].color,
+            footer: {
+                text: `${CONFIG.FOOTER} • ${date} ${time}`
+            }
+        }]
+    };
+
+    fetch(CONFIG.WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(() => {
+        alert("Discord Changelog wurde gesendet.");
+        document.getElementById("message").value = "";
+    })
+    .catch(() => {
+        alert("Fehler beim Senden des Discord Changelogs.");
+    });
+}
+</script>
+
+</body>
+</html>

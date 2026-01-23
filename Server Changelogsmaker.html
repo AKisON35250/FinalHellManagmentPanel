@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>FINAL HELL – Changelog Panel</title>
+
+<style>
+body {
+    background-color: #2b2d31;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    color: #ff3c3c;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.panel {
+    background-color: #1e1f22;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+select, textarea {
+    width: 100%;
+    background-color: #313338;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+textarea {
+    height: 200px;
+    resize: vertical;
+}
+
+button {
+    margin-top: 20px;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 12px;
+    background-color: #ff3c3c;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+</style>
+</head>
+
+<body>
+
+<h1>FINAL HELL – Changelog Panel</h1>
+
+<div class="panel">
+    <label>Changelog-Kategorie</label>
+    <select id="category">
+        <option value="feature">Feature</option>
+        <option value="bugfix">Bugfix</option>
+        <option value="update">Update</option>
+        <option value="hotfix">Hotfix</option>
+    </select>
+</div>
+
+<div class="panel">
+    <label>Beschreibung der Änderung</label>
+    <textarea id="message" placeholder="Beschreibe die Änderungen..."></textarea>
+</div>
+
+<button onclick="send()">Changelog abschicken</button>
+
+<script>
+const CONFIG = {
+    FOOTER: "FINAL HELL SCUM RP • Changelog",
+
+    // ==== HIER WEBHOOK UND ROLLE EINTRAGEN ====
+    WEBHOOKS: [
+        {
+            url: "https://discord.com/api/webhooks/1464405578129604632/sh_qL1h-eMBhigY3W3dZx6IP6dIhF-Za7jV09mzUO_wvaux1j8-eY3HqCcTNH2K3bXuK",
+            role: "<@&1462838238380036176>"
+        },
+        {
+            url: "https://discord.com/api/webhooks/1464056421921591453/hDojPLdSrg1b6BHbKtf3Ac5HcE6GAnpOPvxj7TznuHPrkUthykUErpWrmFh3b5jkNOQH",
+            role: "<@&1462889108962808036>"
+        }
+    ]
+};
+
+const CATEGORY_PRESETS = {
+    feature: { title: "Neues Feature", color: 5763719 },
+    bugfix: { title: "Bugfix", color: 15158332 },
+    update: { title: "Update", color: 5793266 },
+    hotfix: { title: "Hotfix", color: 16705372 }
+};
+
+function send() {
+    const categoryKey = document.getElementById("category").value;
+    const messageText = document.getElementById("message").value.trim();
+
+    if (!messageText) {
+        alert("Bitte einen Text eingeben!");
+        return;
+    }
+
+    const now = new Date();
+    const dateString = now.toLocaleDateString("de-DE");
+    const timeString = now.toLocaleTimeString("de-DE");
+
+    // ---- Nachricht wird für JEDE Webhook + Rolle erstellt ----
+    Promise.all(
+        CONFIG.WEBHOOKS.map(entry => {
+            const payload = {
+                content: entry.role,
+                embeds: [{
+                    title: CATEGORY_PRESETS[categoryKey].title,
+                    description: messageText,
+                    color: CATEGORY_PRESETS[categoryKey].color,
+                    footer: {
+                        text: `${CONFIG.FOOTER} • ${dateString} ${timeString}`
+                    }
+                }]
+            };
+
+            return fetch(entry.url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+        })
+    )
+    .then(() => {
+        alert(`Changelog erfolgreich an alle Kanäle gesendet!\n${dateString} ${timeString}`);
+        document.getElementById("message").value = "";
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Fehler beim Senden an einen oder mehrere Webhooks!");
+    });
+}
+</script>
+
+</body>
+</html>

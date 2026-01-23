@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>FINAL HELL – Ultimate Ankündiger</title>
+
+<style>
+body {
+    background-color: #2b2d31;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    color: #ff3c3c;
+}
+
+.panel {
+    background-color: #1e1f22;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+select, textarea {
+    width: 100%;
+    background-color: #313338;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+textarea {
+    height: 200px;
+    resize: vertical;
+}
+
+button {
+    margin-top: 20px;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 12px;
+    background-color: #ff3c3c;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 FINAL HELL – Discord Ankündiger</h1>
+
+<!-- 🔒 FESTE KONFIGURATION -->
+<script>
+const CONFIG = {
+
+    // 🔥 WEBHOOKS – NAME → URL (URL BLEIBT UNSICHTBAR)
+    WEBHOOKS: {
+        news: {
+            label: "📢 Spieler Ankündigung",
+            url: "https://discord.com/api/webhooks/1464044297719513193/fP5bCaXbZW9MY2fReaaVlRsx-SoGFjmu2mY0d2iKZnKUy8TSgsVgCe2JTzegT2plwUue"
+        },
+        events: {
+            label: "🎉 Team Ankündigung",
+            url: "https://discord.com/api/webhooks/1464048542464217121/LkjgAYvWtq8uN_SnycW4e_jGR_HGhhkylTPdugpVsfIUlgU405ZYOPFnqXlFB7ClL44u"
+        },
+        admin: {
+            label: "🛡 Streamer Ankündigung",
+            url: "https://discord.com/api/webhooks/1464048849177018583/rQnUhZdwkMVOnvvCIfUxtiLzzt2Fmf9KtIyofQ1SwLZNqPA1eMhx3exjHWy6vF7TDVGQ"
+        }
+    },
+
+    FOOTER: "FINAL HELL SCUM RP • Hardcore Survival",
+    IMAGE: "https://r2.fivemanage.com/zqqyIRBSKT1NGIGw2ZvPd/ChatGPTImage19.Jan.202616_28_37.png",
+
+    LINKS: {
+        WEBSITE: "https://sites.google.com/view/finalhellrp/startseite",
+        DISCORD: "https://discord.gg/AQ4B3urYyV",
+        RULES: "https://sites.google.com/view/finalhellrp/regelwerk/ic-regelwerk?authuser=0",
+        VOTE: "https://de.top-games.net/scum/vote/final-hell-rp-696eb404dfb99/",
+    },
+
+    // 🔒 ROLLEN (NAME → ID)
+    ROLES: {
+        none: "",
+        everyone: "@everyone",
+        team: "<@&1462889108962808036>",
+        spieler: "<@&1462838238380036176>",
+        leitung: "<@&1462836965798842389>",
+        admin: "<@&1462837469840937100>",
+        support: "<@&1462837802529067241>",
+        techniker: "<@&1462837944321704058>",
+        streamer: "<@&1462838691012542464>",
+        scum: "<@&1462841429763035156>",
+    }
+};
+</script>
+
+<div class="panel">
+    <label>Webhook auswählen</label>
+    <select id="webhook">
+        <option value="news">📢 Spieler Ankündigung</option>
+        <option value="events">🎉 Team Ankündigung</option>
+        <option value="admin">🛡 Streamer Ankündigung</option>
+    </select>
+</div>
+
+<div class="panel">
+    <label>Kategorie</label>
+    <select id="category">
+        <option value="news">📢 News</option>
+        <option value="event">🎉 Event</option>
+        <option value="maintenance">🛠 Wartung</option>
+        <option value="warning">⚠️ Warnung</option>
+        <option value="hardcore">📜 Regelwerkänderung</option>
+    </select>
+</div>
+
+<div class="panel">
+    <label>Rolle erwähnen</label>
+    <select id="role">
+        <option value="none">❌ Keine Erwähnung</option>
+        <option value="spieler">🤠 Survivor</option>
+        <option value="everyone">@everyone</option>
+        <option value="team">👥 Team</option>
+        <option value="leitung">👑Leitung</option>
+        <option value="admin">🛠Admin</option>
+        <option value="support">🪓Supporter</option>
+        <option value="techniker">🧱Techniker</option>
+        <option value="streamer">🎥Streamer</option>
+        <option value="scum">🧟SCUM</option>
+    </select>
+</div>
+
+<div class="panel">
+    <label>Ankündigungstext</label>
+    <textarea id="message" placeholder="Schreib hier deine Ankündigung..."></textarea>
+</div>
+
+<button onclick="send()">🔥 FINAL HELL Ankündigung senden</button>
+
+<script>
+function send() {
+    const webhookKey = document.getElementById("webhook").value;
+    const category = document.getElementById("category").value;
+    const roleKey = document.getElementById("role").value;
+    let message = document.getElementById("message").value;
+
+    if (!message) {
+        alert("Text fehlt");
+        return;
+    }
+
+    const presets = {
+        news: { title: "📢 SERVER NEWS", color: 5793266 },
+        event: { title: "🎉 EVENT ANKÜNDIGUNG", color: 5763719 },
+        maintenance: { title: "🛠 WARTUNG", color: 16705372 },
+        warning: { title: "⚠️ WICHTIGE WARNUNG", color: 15158332 },
+        hardcore: { title: "📜 Regelwerkänderung", color: 10038562 }
+    };
+
+    message += `
+
+🔗 **Links**
+🌐 Website: ${CONFIG.LINKS.WEBSITE}
+💬 Discord: ${CONFIG.LINKS.DISCORD}
+🗳 Vote: ${CONFIG.LINKS.VOTE}
+📜 Regeln: ${CONFIG.LINKS.RULES}`;
+
+    const payload = {
+        content: CONFIG.ROLES[roleKey],
+        embeds: [{
+            title: presets[category].title,
+            description: message,
+            color: presets[category].color,
+            image: { url: CONFIG.IMAGE },
+            footer: { text: CONFIG.FOOTER }
+        }]
+    };
+
+    fetch(CONFIG.WEBHOOKS[webhookKey].url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(() => alert("Ankündigung gesendet"))
+    .catch(() => alert("Fehler beim Senden"));
+}
+</script>
+
+</body>
+</html>

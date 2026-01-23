@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Homepage Changelog</title>
+
+<style>
+body {
+    background-color: #0f1115;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+}
+
+.container {
+    width: 600px;
+    margin: 50px auto;
+    background: #161a22;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+select, textarea, button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+}
+
+select {
+    background-color: #1e2330;
+    color: white;
+}
+
+textarea {
+    background-color: #1e2330;
+    color: white;
+    height: 150px;
+    resize: vertical;
+}
+
+button {
+    margin-top: 20px;
+    background-color: #5865f2;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #4752c4;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Homepage Changelog</h1>
+
+    <label>Kategorie</label>
+    <select id="category">
+        <option value="Neue Inhalte">Neue Inhalte</option>
+        <option value="Änderungen">Änderungen</option>
+        <option value="Fixes">Fixes</option>
+        <option value="Balance">Balance</option>
+        <option value="Performance">Performance</option>
+        <option value="Sonstiges">Sonstiges</option>
+    </select>
+
+    <label>Changelog Text</label>
+    <textarea id="content" placeholder="Beschreibe hier die Änderungen..."></textarea>
+
+    <button onclick="sendChangelog()">Changelog absenden</button>
+</div>
+
+<script>
+// ================================
+// HIER WEBHOOK EINTRAGEN
+// ================================
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1464404156444967088/7_A4PZjrSQoZQA_KdfvMSJSUnwCKt-mAtIaprZlWOKviutHYggLd0JVOuLZeIzd_RrIe";
+// ================================
+
+function getCategoryColor(category) {
+    switch(category) {
+        case "Neue Inhalte": return 0x2ecc71;
+        case "Änderungen": return 0x3498db;
+        case "Fixes": return 0xe74c3c;
+        case "Balance": return 0xf1c40f;
+        case "Performance": return 0x9b59b6;
+        default: return 0x95a5a6;
+    }
+}
+
+function sendChangelog() {
+    const category = document.getElementById("category").value;
+    const content = document.getElementById("content").value;
+
+    if (!content.trim()) {
+        alert("Bitte Text eingeben.");
+        return;
+    }
+
+    const now = new Date();
+    const date = now.toLocaleDateString("de-DE");
+    const time = now.toLocaleTimeString("de-DE");
+
+    const embed = {
+        title: "Homepage Changelog",
+        color: getCategoryColor(category),
+        fields: [
+            {
+                name: "Kategorie",
+                value: category,
+                inline: true
+            },
+            {
+                name: "Datum & Uhrzeit",
+                value: `${date} • ${time}`,
+                inline: true
+            },
+            {
+                name: "Änderungen",
+                value: content
+            }
+        ],
+        footer: {
+            text: "Automatisch über Homepage gesendet"
+        }
+    };
+
+    fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            embeds: [embed]
+        })
+    }).then(() => {
+        document.getElementById("content").value = "";
+        alert("Changelog erfolgreich gesendet.");
+    }).catch(() => {
+        alert("Fehler beim Senden.");
+    });
+}
+</script>
+
+</body>
+</html>
