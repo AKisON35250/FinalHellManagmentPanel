@@ -55,6 +55,7 @@ main {
     padding: 30px;
     border-radius: 10px;
     max-width: 600px;
+    margin-bottom: 30px;
 }
 
 .card h2 {
@@ -63,6 +64,23 @@ main {
 
 .card p {
     color: #b5b9ff;
+}
+
+input, button {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #1b2030;
+    border: none;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #5865f2;
 }
 </style>
 </head>
@@ -78,10 +96,10 @@ main {
     <a href="Server Changelogsmaker.html">Server Changelog</a>
     <a href="Discord Changelogsmaker.html">Discord Changelog</a>
     <a href="HomepageChangelogsmaker.html">Homepage Changelog</a>
-    <!-- Weitere Tools hier einfügen -->
 </nav>
 
 <main>
+
     <div class="card">
         <h2>Willkommen</h2>
         <p>
@@ -89,7 +107,66 @@ main {
             für Server, Discord oder Homepage zu erstellen und zu veröffentlichen.
         </p>
     </div>
+
+    <!-- NEUE CARD -->
+    <div class="card">
+        <h2>Server Restart Benachrichtigung</h2>
+        <p>Gib ein, in wie vielen Minuten der Server neu startet:</p>
+
+        <input type="number" id="minutes" value="5" min="1">
+        <br><br>
+        <button onclick="sendRestart()">Restart ankündigen</button>
+        <button onclick="sendNow()">Restart JETZT</button>
+    </div>
+
 </main>
+
+<script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1464483917162611011/mx-exmPAR7zmRIYnUM1LOdgXt9EvvdWuZOyyNVJddGTgBbXmcPsX0BAIk9xYVZUsjKeg";
+
+function sendRestart() {
+    const minutes = parseInt(document.getElementById("minutes").value);
+    if (isNaN(minutes) || minutes < 1) {
+        alert("Bitte gültige Minuten eingeben");
+        return;
+    }
+
+    // 1️⃣ Vorwarnung sofort senden
+    fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            content: `@everyone ⚠️ **Server-Neustart in ${minutes} Minuten!**\nBitte bringt euch in Sicherheit und loggt euch rechtzeitig aus.`
+        })
+    });
+
+    alert(`Restart angekündigt. Neustart in ${minutes} Minuten.`);
+
+    // 2️⃣ Automatische Nachricht nach X Minuten
+    setTimeout(() => {
+        fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: "@everyone 🔄 **Der Server wird jetzt neu gestartet!**"
+            })
+        });
+    }, minutes * 60 * 1000);
+}
+
+function sendNow() {
+    fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            content: "@everyone 🔄 **Der Server wird jetzt neu gestartet!**"
+        })
+    })
+    .then(() => alert("Restart-Jetzt Nachricht gesendet"))
+    .catch(() => alert("Fehler beim Senden"));
+}
+</script>
+
 
 </body>
 </html>
